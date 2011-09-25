@@ -1,0 +1,32 @@
+1. What is Squareword?
+Squareword is a square divided into cells. Words are written into cells in particular order.
+The task is to fill empty cells with symbols from already given set so that in every horizontal,
+vertical row and in every of two main diagonals there were no equal symbols.
+For example:
+
+ S L E Z A
+ * * * * *
+ * * L E S
+ * * * * *
+ * * * * *
+
+ `*` indicate empty symbols that should be filled. Correct solution to this example is following:
+
+ S L E Z A
+ A E Z S L
+ Z A L E S
+ L Z S A E
+ E S A L Z
+
+2. TODO list:
+- various tests
+- more solving strategies
+- solving of squarewords with more than one correct solution
+- import-export functionality, currently only editing Main class string edit is working
+- more functional-programming style for some code parts
+
+3. License
+This software is licensed under MIT license, see file MIT-LICENSE.txt for details.
+
+4. Versions
+0.0.3-SNAPSHOT - initial version
