@@ -1,40 +1,14 @@
-
-/*
- * Copyright (C) 2011 MrKeyholder https://github.com/MrKeyholder
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 package org.squarewordsolver
 
 /**
- * @author MrKeyholder
+ * immutable class to get cells in easy to use data structures
  */
-
-import scala.collection.mutable.Map
-
 class LinesCache(
-                  private val dimension: Int,
+                  val dimension: Int,
                   f: (Int, Int) => Cell
                   ) {
+
   def this(area: Array[Array[Cell]]) = this (area.size, (i, j) => area(i)(j))
-  def this(area: PuzzleArea) = this(area.dimension, (i,j)=>area.at(i,j))
 
   private def this(linesCache: LinesCache, f: (Int, Int, Cell) => Cell) = this (linesCache.dimension, (i, j) => f(i, j, linesCache.at(i, j)))
 
@@ -92,6 +66,35 @@ class LinesCache(
    */
   def getRows = List.tabulate(dimension)(i => getRow(i))
 
+  def getUnfinishedChars = getEverythingConstrained.foldLeft(Set[Char]())(_ ++ _.foldLeft(Set[Char]())(_ ++ _.possibleVals))
+
+  /**
+   * main loop supporter
+   */
+  def newCacheWithChangedCell(newCell: Cell) = new LinesCache(dimension, (x, y) => if (x == newCell.coordX && y == newCell.coordY) newCell else at(x, y))
+
+  def newCacheWithChangedCells(mapOfReducedCells: Map[Cell, Set[Char]]) = new LinesCache(dimension, (x, y) => {
+    val atXY = at(x, y)
+    mapOfReducedCells.get(atXY) match {
+      case Some(charsToRemove) => atXY.withoutPossibleChars(charsToRemove)
+      case None => atXY
+    }
+  })
+
+  def newCacheWithChangedCells2(mapOfReducedCells: Map[(Int, Int), Cell]) = new LinesCache(dimension, (x, y) => {
+    val atXY = at(x, y)
+    mapOfReducedCells.get((atXY.coordX, atXY.coordY)) match {
+      case Some(cell) => cell
+      case None => atXY
+    }
+  })
+
+  def newCacheWithChangedCells(list: List[CharToRemove]) = new LinesCache(dimension, (x, y) => {
+    val toRemoveCurr = list.filter(chTR => chTR.fromCoordinate._1 == x && chTR.fromCoordinate._2 == y)
+    val atXY = at(x, y)
+    if (toRemoveCurr.isEmpty) atXY else atXY.withoutPossibleChars(toRemoveCurr.map(_.theChar).toSet)
+  })
+
   /**
    * return lines cache but with all possible locations for char c on the board
    * For example:
@@ -99,9 +102,9 @@ class LinesCache(
    * ...A..A
    * A....A.
    */
-  def onlyWithChar(c: Char) = {
+  def newCacheOnlyWithChar(c: Char) = {
     def onlyWithCharFunction(i: Int, j: Int, cell: Cell) = cell.possibleVals match {
-      case possVlz if possVlz.contains(c) => new Cell(c, cell.coordX, cell.coordY)
+      case possVlz if possVlz.contains(c) => Cell(cell.coordX, cell.coordY, c)
       case _ => Cell.empty(i, j)
     }
     new LinesCache(this, (i, j, cell) => onlyWithCharFunction(i, j, this.at(i, j)))
@@ -115,6 +118,10 @@ class LinesCache(
 
   private def tabulateShortcut(f: Int => Cell) = List.tabulate(dimension)(f)
 
+  override def equals(obj: Any) = classOf[LinesCache] == obj.getClass && getAllCells == obj.asInstanceOf[LinesCache].getAllCells
+
+  override def hashCode = getAllCells.hashCode()
+
   override def toString = {
     def stringRow(j: Int): String = if (dimension == j) "" else "\n%s%s".format(getRow(j).mkString, stringRow(j + 1))
     stringRow(0)
@@ -126,7 +133,7 @@ object LinesCache {
 
   /**
    * map the `big` index from LinesCache#getEverythingConstrained method to normal (i,j) coordinates on puzzle area
-    */
+   */
   def normalCoordinates(bigIndex: Int, indexInConstrainedSequence: Int, dimension: Int): (Int, Int) = bigIndex match {
     case idx if 0 <= idx && idx < dimension => {
       (indexInConstrainedSequence, idx)

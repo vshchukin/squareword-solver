@@ -1,35 +1,6 @@
-
-/*
- * Copyright (C) 2011 MrKeyholder https://github.com/MrKeyholder
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 package org.squarewordsolver.impl
 
 import org.squarewordsolver._
-
-/**
- * @author MrKeyholder
- * Date: 9/11/11
- * Time: 11:32 AM
- */
 
 /**
  * Given unset symbols
@@ -41,20 +12,18 @@ import org.squarewordsolver._
  * in rows 2 and 4 there are only two possible A and they are in same columns
  * then all other A can be removed from these two columns. In current example
  * possible values to be removed are A in row 1 and row 3
- *
  */
 class CollisionByXWing(
                         private val puzzleArea: PuzzleArea
                         ) extends RemoveAdvice {
-  private val internalLinesCache = new LinesCache(puzzleArea)
+  private val internalLinesCache = puzzleArea.linesCache
 
-  def getAdvice = {
-
-    puzzleArea.getUnfinishedChars.foldLeft(List[CharToRemove]())((aggr, curr) => xWingCollisionPerChar(curr) ::: aggr)
+  override def getAdvice = {
+    internalLinesCache.getUnfinishedChars.foldLeft(List[CharToRemove]())((aggr, curr) => xWingCollisionPerChar(curr) ::: aggr)
   }
 
   private def xWingCollisionPerChar(char: Char) = {
-    val cacheOnlyWithChar = new LinesCache(puzzleArea).onlyWithChar(char)
+    val cacheOnlyWithChar = puzzleArea.linesCache.newCacheOnlyWithChar(char)
 
     def getOnlyWithTwoChars2(theList: List[List[Cell]]) = theList.foldLeft(List[List[Cell]]())((summ, curr) => {
       val twos = curr filter (_.isSet)
@@ -83,7 +52,7 @@ class CollisionByXWing(
                     ) = collOnlyWithTwoChars.foldLeft(Set[(Cell, Cell, Cell, Cell)]())((aggregated, current) => {
       val currentCells = toPairOfCells(current)
       val secondPositionsList = collOnlyWithTwoChars.filter(list => filteringCond(toPairOfCells(list), currentCells))
-      assume(secondPositionsList.isEmpty || secondPositionsList.size == 1, "Illegal state, not valid squareword")
+      assume(secondPositionsList.isEmpty || secondPositionsList.size == 1, "Illegal state, not a valid squareword")
       if (!secondPositionsList.isEmpty) {
         val theOtherz = toPairOfCells(secondPositionsList.head)
         if (insertingCond(theOtherz, currentCells))
@@ -135,10 +104,10 @@ class CollisionByXWing(
       .filter(cell => cell.possibleVals.contains(char) && !whereToIgnore.contains(theFilter(cell)))
       .map(cell => CharToRemove(char, (cell.coordX, cell.coordY)))
 
-    xWings.foldLeft(List[CharToRemove]())((aggregated, current) => {
+    xWings.foldLeft(List[CharToRemove]())((aggregator, current) => {
       val whereToDelete = getWhereToDelete(current)
       val whereToIgnore = getWhereToIgnore(current)
-      aggregated ++ toPossibleVals(getColOrRowByIndex(whereToDelete._1), whereToIgnore) ++ toPossibleVals(getColOrRowByIndex(whereToDelete._2), whereToIgnore)
+      aggregator ++ toPossibleVals(getColOrRowByIndex(whereToDelete._1), whereToIgnore) ++ toPossibleVals(getColOrRowByIndex(whereToDelete._2), whereToIgnore)
     })
   }
 }

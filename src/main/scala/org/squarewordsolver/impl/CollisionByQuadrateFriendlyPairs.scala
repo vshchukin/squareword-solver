@@ -1,35 +1,6 @@
-
-/*
- * Copyright (C) 2011 MrKeyholder https://github.com/MrKeyholder
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 package org.squarewordsolver.impl
 
 import org.squarewordsolver.{CharToRemove, PuzzleArea, RemoveAdvice}
-
-/**
- * @author abcdef
- * Date: 9/10/11
- * Time: 11:00 AM
- */
 
 /**
  * Given next situation on puzzle field:
@@ -44,6 +15,7 @@ class CollisionByQuadrateFriendlyPairs(
                                         private val puzzleArea: PuzzleArea,
                                         private val friendlyPairs: Set[((Char, Char), (Int, Int), (Int, Int))]
                                         ) extends RemoveAdvice {
+  private val linesCache = puzzleArea.linesCache
 
   override def getAdvice = {
     val uniqueFriendlyPairs = friendlyPairs.foldLeft(Set[(Char, Char)]())((aggregation, currFriendlyPair) => {
@@ -74,8 +46,6 @@ class CollisionByQuadrateFriendlyPairs(
     }
     yield (pairOfChars, Set(basicsCoordinate, first.head, second.head))
 
-    //println(correctQuadrateCandidates)
-
     val charsToRemove = for {
       correctCandidate <- correctQuadrateCandidates
       currSetOfPairs = {
@@ -84,15 +54,11 @@ class CollisionByQuadrateFriendlyPairs(
 
       toList = correctCandidate._2.toList
       fourthCornerCoords = (toList(2)._1, toList(1)._2)
-      fourthCornerCell = {
-        println(puzzleArea.at(2,6).possibleVals & currSetOfPairs)
-        puzzleArea.at(fourthCornerCoords._1, fourthCornerCoords._2)
-      }
+      fourthCornerCell = linesCache.at(fourthCornerCoords._1, fourthCornerCoords._2)
       if (fourthCornerCell.isNotSet)
       charsToRemove = currSetOfPairs & fourthCornerCell.possibleVals
       if (!charsToRemove.isEmpty)
     }
-
     yield CharToRemove(charsToRemove.head, fourthCornerCoords)
 
     println(charsToRemove)
