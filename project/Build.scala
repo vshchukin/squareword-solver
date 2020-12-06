@@ -58,5 +58,5 @@ object MainBuild extends Build {
     .settings(resolvers ++= Seq(sbtAssemblyRepo))
     .settings(libraryDependencies ++= Seq(scalaTest, junit))
     .settings(scalacOptions ++= Seq("-unchecked", "-deprecation", "-encoding", "utf8", "-target:jvm-1.7"))
-    .settings(javacOptions ++= Seq("-source", "1.7", "-target", "1.7"))
+    .settings(javacOptions ++= Seq("-source", "1.8", "-target", "1.8"))
 }
