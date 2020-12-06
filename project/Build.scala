@@ -4,8 +4,8 @@ import sbt.Keys._
 
 object BuildSettings {
   val buildOrganization = "org.squarewordsolver"
-  val buildVersion = "0.0.10"
-  val buildScalaVersion = "2.10.4"
+  val buildVersion = "0.0.11"
+  val buildScalaVersion = "2.13.4"
   val projectName = "squareword-solver"
 
   val buildSettings = Defaults.coreDefaultSettings ++ Seq(
