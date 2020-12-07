@@ -1,5 +1,7 @@
 package org.squarewordsolver
 
+import scala.annotation.tailrec
+
 /**
  * immutable class to get cells in easy to use data structures
  */
