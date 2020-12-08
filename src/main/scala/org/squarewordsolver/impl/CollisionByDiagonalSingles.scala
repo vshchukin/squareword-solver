@@ -21,8 +21,8 @@ class CollisionByDiagonalSingles(
                                   ) extends RemoveAdvice {
   private val linesCache = puzzleArea.linesCache
 
-  override def getAdvice = {
-    linesCache.getUnfinishedChars.map(getCollisionsByChar(_)).foldLeft(List[CharToRemove]())(_ ::: _)
+  override def getAdvice: List[CharToRemove] = {
+    linesCache.getUnfinishedChars.map(getCollisionsByChar).foldLeft(List[CharToRemove]())(_ ::: _)
   }
 
   private def getCollisionsByChar(c: Char): List[CharToRemove] = {
@@ -37,7 +37,7 @@ class CollisionByDiagonalSingles(
       case _ => List[CharToRemove]()
     }
     if (isThisCharInteresting) {
-      val (firstCell, secondCell) = (possibilities(0), possibilities(1))
+      val (firstCell, secondCell) = (possibilities.head, possibilities(1))
       getCollisions(firstCell.coordX, secondCell.coordY) ::: getCollisions(firstCell.coordY, secondCell.coordX)
     } else List[CharToRemove]()
   }

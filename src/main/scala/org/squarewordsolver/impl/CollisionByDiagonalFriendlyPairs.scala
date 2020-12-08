@@ -10,7 +10,7 @@ class CollisionByDiagonalFriendlyPairs(
   private val linesCache = puzzleArea.linesCache
   private val dimension = puzzleArea.dimension
 
-  override def getAdvice = {
+  override def getAdvice: List[CharToRemove] = {
 
     var found = ListBuffer[CharToRemove]()
     def updateFound(i: Int, j: Int, c: Char) {

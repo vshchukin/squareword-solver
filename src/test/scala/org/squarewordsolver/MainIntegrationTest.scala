@@ -6,7 +6,7 @@ import org.scalatest.matchers.should.Matchers
 
 class MainIntegrationTest extends AnyFlatSpec with Matchers {
 
-  val fixtureN = (List(
+  private val fixtureN = (List(
     "NIKOLAEV",
     "        ",
     "   KIEV ",
@@ -26,7 +26,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "LKANEVOI"
   ))
 
-  val fixtureS = (List(
+  private val fixtureS = (List(
     "SLEZA",
     "     ",
     "  LES",
@@ -40,7 +40,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "ESALZ"
   ))
 
-  val fixtureK = (List(
+  private val fixtureK = (List(
     "KARBOLIT",
     "BLOK    ",
     "   LIBRA",
@@ -60,7 +60,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "ITBOKALR"
   ))
 
-  val fixtureP = (List(
+  private val fixtureP = (List(
     "PISATELY",
     "   LIST ",
     "        ",
@@ -80,7 +80,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "APLESTYI"
   ))
 
-  val fixtureR = (List(
+  private val fixtureR = (List(
     "REDAKCIY",
     "   KEDR ",
     "        ",
@@ -100,7 +100,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "IYCEDRAK"
   ))
 
-  val fixtureLE = (List(
+  private val fixtureLE = (List(
     "LENTO4KA",
     "  TOL   ",
     "   4ELO ",
@@ -120,7 +120,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "OL4EKANT"
   ))
 
-  val fixtureKV = (List(
+  private val fixtureKV = (List(
     "KVERSLAG",
     "VERA    ",
     "    VEGA",
@@ -140,7 +140,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "SKLEGARV"
   ))
 
-  val fixtureMA = (List(
+  private val fixtureMA = (List(
     "MAVZOLEY",
     "        ",
     "        ",
@@ -160,7 +160,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "VYZOLAME"
   ))
 
-  val fixtureEU = (List(
+  private val fixtureEU = (List(
     "EURATOM",
     "       ",
     "    AM ",
@@ -178,7 +178,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     "OTAMEUR"
   ))
 
-  val fixtureCA = (List(
+  private val fixtureCA = (List(
     "KALQSYI",
     "       ",
     " KALYI ",

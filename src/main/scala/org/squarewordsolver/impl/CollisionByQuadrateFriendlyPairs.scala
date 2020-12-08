@@ -17,7 +17,7 @@ class CollisionByQuadrateFriendlyPairs(
                                         ) extends RemoveAdvice {
   private val linesCache = puzzleArea.linesCache
 
-  override def getAdvice = {
+  override def getAdvice: List[CharToRemove] = {
     val uniqueFriendlyPairs = friendlyPairs.foldLeft(Set[(Char, Char)]())((aggregation, currFriendlyPair) => {
       val currPairOfChars = currFriendlyPair._1
       if (aggregation contains currPairOfChars.swap)
@@ -57,7 +57,7 @@ class CollisionByQuadrateFriendlyPairs(
       fourthCornerCell = linesCache.at(fourthCornerCoords._1, fourthCornerCoords._2)
       if (fourthCornerCell.isNotSet)
       charsToRemove = currSetOfPairs & fourthCornerCell.possibleVals
-      if (!charsToRemove.isEmpty)
+      if charsToRemove.nonEmpty
     }
     yield CharToRemove(charsToRemove.head, fourthCornerCoords)
 

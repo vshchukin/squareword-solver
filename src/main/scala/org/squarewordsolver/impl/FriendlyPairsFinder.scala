@@ -43,7 +43,7 @@ class FriendlyPairsFinder(
   : Set[((Char, Char), (Int, Int), (Int, Int))] = {
 
     def getIfOnlyTwo(c: Char): Set[Char] = {
-      constrainedSeq.filter(_.possibleVals.contains(c)).size match {
+      constrainedSeq.count(_.possibleVals.contains(c)) match {
         case 2 => Set(c)
         case _ => Set()
       }
@@ -59,8 +59,8 @@ class FriendlyPairsFinder(
     distinctPairsOfOnlyTwoChars.foreach {
       case (first, second) => {
         def possibleValsContainsFirstAndSecond(c: Cell): Boolean = Set(first, second).forall(c.possibleVals.contains)
-        val firstIdx = constrainedSeq.indexWhere(possibleValsContainsFirstAndSecond(_))
-        val secondIdx = constrainedSeq.indexWhere(possibleValsContainsFirstAndSecond(_), firstIdx + 1)
+        val firstIdx = constrainedSeq.indexWhere(possibleValsContainsFirstAndSecond)
+        val secondIdx = constrainedSeq.indexWhere(possibleValsContainsFirstAndSecond, firstIdx + 1)
         if (-1 != firstIdx && -1 != secondIdx) {
           onlies += (((first, second), LinesCache.normalCoordinates(index, firstIdx, dimension), LinesCache.normalCoordinates(index, secondIdx, dimension)))
         }

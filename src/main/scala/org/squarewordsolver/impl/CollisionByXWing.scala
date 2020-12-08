@@ -18,7 +18,7 @@ class CollisionByXWing(
                         ) extends RemoveAdvice {
   private val internalLinesCache = puzzleArea.linesCache
 
-  override def getAdvice = {
+  override def getAdvice: List[CharToRemove] = {
     internalLinesCache.getUnfinishedChars.foldLeft(List[CharToRemove]())((aggr, curr) => xWingCollisionPerChar(curr) ::: aggr)
   }
 
@@ -53,7 +53,7 @@ class CollisionByXWing(
       val currentCells = toPairOfCells(current)
       val secondPositionsList = collOnlyWithTwoChars.filter(list => filteringCond(toPairOfCells(list), currentCells))
       assume(secondPositionsList.isEmpty || secondPositionsList.size == 1, "Illegal state, not a valid squareword")
-      if (!secondPositionsList.isEmpty) {
+      if (secondPositionsList.nonEmpty) {
         val theOtherz = toPairOfCells(secondPositionsList.head)
         if (insertingCond(theOtherz, currentCells))
           aggregated + ((currentCells._1, currentCells._2, theOtherz._1, theOtherz._2))

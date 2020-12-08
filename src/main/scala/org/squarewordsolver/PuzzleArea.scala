@@ -13,9 +13,9 @@ package org.squarewordsolver
 class PuzzleArea(
                   val linesCache: LinesCache
                   ) {
-  val dimension = linesCache.dimension
+  val dimension: Int = linesCache.dimension
 
-  def regenerateFromPossibleValues = {
+  def regenerateFromPossibleValues: Option[PuzzleArea] = {
     def possibleValsThatCanBeRemoved(cell: Cell, list: List[Cell]): Set[Char] = {
       list.filter(_.isSet).map(_.item).foldLeft(Set[Char]())((aggr, c) => if (cell.possibleVals.contains(c)) aggr + c else aggr)
     }
@@ -27,11 +27,11 @@ class PuzzleArea(
 
       (cell, megaListToProcess.foldLeft(Set[Char]())(_ ++ possibleValsThatCanBeRemoved(cell, _)))
     })
-    val firstMap = toRemovePossibleVals.filter(!_._2.isEmpty).toMap
-    val secondMap = linesCache.getAllCells.filter(_.isNotSet).map(_.tryGetFound).filter(_.isDefined).map(elem => elem match {
+    val firstMap = toRemovePossibleVals.filter(_._2.nonEmpty).toMap
+    val secondMap = linesCache.getAllCells.filter(_.isNotSet).map(_.tryGetFound).filter(_.isDefined).map {
       case Some(cell) => ((cell.coordX, cell.coordY), cell)
       case _ => throw new AssertionError()
-    }).toMap
+    }.toMap
 
     if (firstMap.isEmpty && secondMap.isEmpty) None else Some(new PuzzleArea(linesCache.newCacheWithChangedCells(firstMap).newCacheWithChangedCells2(secondMap)))
   }
@@ -56,9 +56,9 @@ class PuzzleArea(
   /**
    * if this puzzle is finished or not
    */
-  def isFinished = linesCache.getAllCells.forall(_.isSet)
+  def isFinished: Boolean = linesCache.getAllCells.forall(_.isSet)
 
-  def isNotFinished = !isFinished
+  def isNotFinished: Boolean = !isFinished
 
   private def toString(lineStart: (Int) => String, eachCell: (Int, Int, Char, Set[Char]) => String, lineEnd: (Int) => String) = {
     val result = new StringBuilder
@@ -72,7 +72,7 @@ class PuzzleArea(
     result.toString()
   }
 
-  override def toString = {
+  override def toString: String = {
     val s1 = "    " + (List.tabulate(dimension)(i => "  %10s  ".format(i))).mkString
     val s2 = toString(
       (j) => "%s:: ".format(j),
@@ -82,14 +82,14 @@ class PuzzleArea(
     "%s\n%s\n\n".format(s1, s2)
   }
 
-  def toStringSimple = linesCache.getRows.map(_.map(_.item).mkString) mkString "\n"
+  def toStringSimple: String = linesCache.getRows.map(_.map(_.item).mkString) mkString "\n"
 
 }
 
 object PuzzleArea {
-  def convert(initialList: List[String]) = {
+  def convert(initialList: List[String]): LinesCache = {
     require(initialList != null, "elems must not be null")
-    require(initialList.filter(item => (item != null && item.length == initialList.length)).length == initialList.length, "list of strings must form a square")
+    require(initialList.count(item => (item != null && item.length == initialList.length)) == initialList.length, "list of strings must form a square")
 
     val dimension = initialList.size
     val allDistinctChars = initialList(0).toCharArray.toSet // 1st line is always filled with all symbols, tradition for squarewords

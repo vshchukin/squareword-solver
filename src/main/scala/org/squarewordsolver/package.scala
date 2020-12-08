@@ -7,7 +7,7 @@ package object squarewordsolver {
 
   def itemAt(i: Int, j: Int)(implicit area: Area): Item = area.a(i * area.sz + j)
 
-  def rowAt(i: Int)(implicit area: Area): Seq[Item] = area.a.drop(area.sz * Math.max(i - 1, 0)) take area.sz
+  def rowAt(i: Int)(implicit area: Area): Seq[Item] = area.a.slice(area.sz * Math.max(i - 1, 0), area.sz * Math.max(i - 1, 0) + area.sz)
 
   def colAt(j: Int)(implicit area: Area): Seq[Item] = sizeRange(area.sz).map(i => area.a(i + j))
 
@@ -36,7 +36,7 @@ package object squarewordsolver {
     seq.zipWithIndex.collect {
       case (OneOfChars(set), idx) => (set.intersect(finishedChars), idx)
     }.flatMap {
-      case (procSet, idx) if !procSet.isEmpty => procSet zip List.tabulate(seq.size)(_ => idx)
+      case (procSet, idx) if procSet.nonEmpty => procSet zip List.tabulate(seq.size)(_ => idx)
     }
   }
 }

@@ -7,4 +7,4 @@ package org.squarewordsolver
 case class CharToRemove(
                          theChar: Char,
                          fromCoordinate: (Int, Int)
-                         )
+                       )

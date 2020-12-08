@@ -15,7 +15,7 @@ case class Cell(
    * @throws IllegalArgumentException if c is not possible char for this cell
    * @return found cell
    */
-  def foundWithChar(c: Char) = {
+  def foundWithChar(c: Char): Cell = {
     require(possibleVals.contains(c), "char %s is not in possible values for this cell")
     Cell(coordX, coordY, c)
   }
@@ -23,7 +23,7 @@ case class Cell(
   /**
    * @return Some Cell if current cell can be marked as found, None otherwise
    */
-  def tryGetFound = if (possibleVals.size == 1) Some(Cell(coordX, coordY, possibleVals.head)) else None
+  def tryGetFound: Option[Cell] = if (possibleVals.size == 1) Some(Cell(coordX, coordY, possibleVals.head)) else None
 
   /**
    * get new cell that is equal to current cell with reduced possible values by param char
@@ -31,20 +31,20 @@ case class Cell(
    * @throws IllegalArgumentException if possibleChar is not possible char for this cell
    * @return reduced Cell
    */
-  def withoutPossibleChar(possibleChar: Char) = {
+  def withoutPossibleChar(possibleChar: Char): Cell = {
     require(possibleVals.contains(possibleChar), "%s does not contain char %s".format(this, possibleChar))
     Cell(coordX, coordY, item, possibleVals - possibleChar)
   }
 
-  def withoutPossibleChars(possibleChars: Set[Char]) = Cell(coordX, coordY, item, possibleVals -- possibleChars)
+  def withoutPossibleChars(possibleChars: Set[Char]): Cell = Cell(coordX, coordY, item, possibleVals -- possibleChars)
 
-  def isSet = (' ' != item)
+  def isSet: Boolean = (' ' != item)
 
-  def isNotSet = !isSet
+  def isNotSet: Boolean = !isSet
 
-  def is(i: Char) = (i == item)
+  def is(i: Char): Boolean = (i == item)
 }
 
 object Cell {
-  def empty(coordX: Int, coordY: Int) = Cell(coordX, coordY, ' ')
+  def empty(coordX: Int, coordY: Int): Cell = Cell(coordX, coordY, ' ')
 }

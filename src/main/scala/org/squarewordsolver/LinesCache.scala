@@ -1,18 +1,16 @@
 package org.squarewordsolver
 
-import scala.annotation.tailrec
-
 /**
  * immutable class to get cells in easy to use data structures
  */
 class LinesCache(
                   val dimension: Int,
                   f: (Int, Int) => Cell
-                  ) {
+                ) {
 
-  def this(area: Array[Array[Cell]]) = this (area.size, (i, j) => area(i)(j))
+  def this(area: Array[Array[Cell]]) = this(area.length, (i, j) => area(i)(j))
 
-  private def this(linesCache: LinesCache, f: (Int, Int, Cell) => Cell) = this (linesCache.dimension, (i, j) => f(i, j, linesCache.at(i, j)))
+  private def this(linesCache: LinesCache, f: (Int, Int, Cell) => Cell) = this(linesCache.dimension, (i, j) => f(i, j, linesCache.at(i, j)))
 
   private val theArea = Array.tabulate(dimension, dimension)(f)
 
@@ -22,14 +20,14 @@ class LinesCache(
   private val mainDiagonal: List[Cell] = tabulateShortcut(i => theArea(i)(i))
   private val secondDiagonal: List[Cell] = tabulateShortcut(i => theArea(i)(dimension - i - 1))
 
-  def getColumn(i: Int) = {
+  def getColumn(i: Int): List[Cell] = {
     if (!columns.contains(i)) {
       columns += (i -> tabulateShortcut(jj => theArea(i)(jj)))
     }
     columns(i)
   }
 
-  def getRow(j: Int) = {
+  def getRow(j: Int): List[Cell] = {
     if (!rows.contains(j)) {
       rows += (j -> tabulateShortcut(ii => theArea(ii)(j)))
     }
@@ -40,7 +38,7 @@ class LinesCache(
    * return all rows, then all columns, then 1st and 2nd diagonal
    * basically all elements that should have unique constraint
    */
-  def getEverythingConstrained = {
+  def getEverythingConstrained: List[List[Cell]] = {
     List.tabulate(2 * dimension + 2)(i => {
       if (i < dimension)
         getRow(i)
@@ -56,19 +54,19 @@ class LinesCache(
   /**
    * return all cells on the board
    */
-  def getAllCells = getRows.foldLeft(List[Cell]())(_ ++ _)
+  def getAllCells: List[Cell] = getRows.foldLeft(List[Cell]())(_ ++ _)
 
   /**
    * get every column
    */
-  def getColumns = List.tabulate(dimension)(i => getColumn(i))
+  def getColumns: List[List[Cell]] = List.tabulate(dimension)(i => getColumn(i))
 
   /**
    * get every row
    */
-  def getRows = List.tabulate(dimension)(i => getRow(i))
+  def getRows: List[List[Cell]] = List.tabulate(dimension)(i => getRow(i))
 
-  def getUnfinishedChars = getEverythingConstrained.foldLeft(Set[Char]())(_ ++ _.foldLeft(Set[Char]())(_ ++ _.possibleVals))
+  def getUnfinishedChars: Set[Char] = getEverythingConstrained.foldLeft(Set[Char]())(_ ++ _.foldLeft(Set[Char]())(_ ++ _.possibleVals))
 
   /**
    * main loop supporter
@@ -104,28 +102,30 @@ class LinesCache(
    * ...A..A
    * A....A.
    */
-  def newCacheOnlyWithChar(c: Char) = {
+  def newCacheOnlyWithChar(c: Char): LinesCache = {
     def onlyWithCharFunction(i: Int, j: Int, cell: Cell) = cell.possibleVals match {
       case possVlz if possVlz.contains(c) => Cell(cell.coordX, cell.coordY, c)
       case _ => Cell.empty(i, j)
     }
+
     new LinesCache(this, (i, j, cell) => onlyWithCharFunction(i, j, this.at(i, j)))
   }
 
-  def getMainDiagonal = mainDiagonal
+  def getMainDiagonal: List[Cell] = mainDiagonal
 
-  def getSecondDiagonal = secondDiagonal
+  def getSecondDiagonal: List[Cell] = secondDiagonal
 
-  def at(i: Int, j: Int) = theArea(i)(j)
+  def at(i: Int, j: Int): Cell = theArea(i)(j)
 
   private def tabulateShortcut(f: Int => Cell) = List.tabulate(dimension)(f)
 
-  override def equals(obj: Any) = classOf[LinesCache] == obj.getClass && getAllCells == obj.asInstanceOf[LinesCache].getAllCells
+  override def equals(obj: Any): Boolean = classOf[LinesCache] == obj.getClass && getAllCells == obj.asInstanceOf[LinesCache].getAllCells
 
-  override def hashCode = getAllCells.hashCode()
+  override def hashCode: Int = getAllCells.hashCode()
 
-  override def toString = {
+  override def toString: String = {
     def stringRow(j: Int): String = if (dimension == j) "" else "\n%s%s".format(getRow(j).mkString, stringRow(j + 1))
+
     stringRow(0)
   }
 
@@ -137,17 +137,13 @@ object LinesCache {
    * map the `big` index from LinesCache#getEverythingConstrained method to normal (i,j) coordinates on puzzle area
    */
   def normalCoordinates(bigIndex: Int, indexInConstrainedSequence: Int, dimension: Int): (Int, Int) = bigIndex match {
-    case idx if 0 <= idx && idx < dimension => {
+    case idx if 0 <= idx && idx < dimension =>
       (indexInConstrainedSequence, idx)
-    }
-    case idx if dimension <= idx && idx < 2 * dimension => {
+    case idx if dimension <= idx && idx < 2 * dimension =>
       (idx - dimension, indexInConstrainedSequence)
-    }
-    case idx if idx == 2 * dimension => {
+    case idx if idx == 2 * dimension =>
       (indexInConstrainedSequence, indexInConstrainedSequence)
-    }
-    case _ => {
+    case _ =>
       (indexInConstrainedSequence, dimension - indexInConstrainedSequence - 1)
-    }
   }
 }
