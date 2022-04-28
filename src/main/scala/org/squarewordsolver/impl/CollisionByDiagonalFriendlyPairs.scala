@@ -6,22 +6,23 @@ import org.squarewordsolver.{CharToRemove, PuzzleArea, RemoveAdvice}
 class CollisionByDiagonalFriendlyPairs(
                                         private val puzzleArea: PuzzleArea,
                                         private val friendlyPairs: Set[((Char, Char), (Int, Int), (Int, Int))]
-                                        ) extends RemoveAdvice {
+                                      ) extends RemoveAdvice {
   private val linesCache = puzzleArea.linesCache
   private val dimension = puzzleArea.dimension
 
   override def getAdvice: List[CharToRemove] = {
 
     var found = ListBuffer[CharToRemove]()
-    def updateFound(i: Int, j: Int, c: Char) {
+
+    def updateFound(i: Int, j: Int, c: Char): Unit = {
       found += CharToRemove(c, (i, j))
     }
 
-    def updateTriangleLike(firstChar: Char, secondChar: Char, i1: Int, j1: Int, i2: Int, j2: Int) {
+    def updateTriangleLike(firstChar: Char, secondChar: Char, i1: Int, j1: Int, i2: Int, j2: Int): Unit = {
       // main diagonal
       val magicSet = Set(firstChar, secondChar)
 
-      def updateRemovableValuesFromSet(set: Set[Char], i: Int, j: Int) {
+      def updateRemovableValuesFromSet(set: Set[Char], i: Int, j: Int): Unit = {
         set.foreach {
           case charToRemove => updateFound(i, j, charToRemove)
         }

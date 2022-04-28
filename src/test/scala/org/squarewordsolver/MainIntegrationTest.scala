@@ -209,7 +209,7 @@ class MainIntegrationTest extends AnyFlatSpec with Matchers {
     fixtureS
   )
 
-  private def assertEqualSquarewords(pair: (List[String], List[String])) {
+  private def assertEqualSquarewords(pair: (List[String], List[String])): Unit = {
     val (initialPuzzle, solvedPuzzle) = pair
     val actualPuzzleArea = Main generalResultOf initialPuzzle
     println(actualPuzzleArea.linesCache)
