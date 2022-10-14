@@ -1,5 +1,7 @@
 package org.squarewordsolver
 
+import scala.collection.mutable
+
 /**
  * Holder for puzzle area information, converts input list of strings of form:
  *
@@ -53,15 +55,8 @@ class PuzzleArea(
 
   def withoutPossibleVals(list: List[CharToRemove]) = new PuzzleArea(linesCache.newCacheWithChangedCells(list))
 
-  /**
-   * if this puzzle is finished or not
-   */
-  def isFinished: Boolean = linesCache.getAllCells.forall(_.isSet)
-
-  def isNotFinished: Boolean = !isFinished
-
   private def toString(lineStart: (Int) => String, eachCell: (Int, Int, Char, Set[Char]) => String, lineEnd: (Int) => String) = {
-    val result = new StringBuilder
+    val result = new mutable.StringBuilder
     for (j <- 0 until dimension; i <- 0 until dimension) {
       if (0 == i) result append lineStart(j)
       val current = linesCache.at(i, j)
@@ -76,7 +71,7 @@ class PuzzleArea(
     val s1 = "    " + (List.tabulate(dimension)(i => "  %10s  ".format(i))).mkString
     val s2 = toString(
       (j) => "%s:: ".format(j),
-      (i, j, c, s) => "[ %10s ]".format((if (c != ' ') c else ("!!%s".format(s.mkString)))),
+      (_, _, c, s) => "[ %10s ]".format((if (c != ' ') c else ("!!%s".format(s.mkString)))),
       (j) => "\n"
     )
     "%s\n%s\n\n".format(s1, s2)
